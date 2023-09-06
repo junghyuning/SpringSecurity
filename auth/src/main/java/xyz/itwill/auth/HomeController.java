@@ -61,6 +61,11 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/user/page", method = RequestMethod.GET)
+	public String guestPage() {
+		return "user_page";
+	}
+
+	@RequestMapping(value = "/user/page", method = RequestMethod.GET)
 	public String userPage() {
 		return "user_page";
 	}
