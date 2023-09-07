@@ -1,8 +1,12 @@
 package xyz.itwill.auth;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import lombok.extern.slf4j.Slf4j;
 
 //Spring Security : SpringMVC 프로그램의 인증과 인가 기능을 지원하는 보안 프레임워크
 
@@ -53,16 +57,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 //11.CorsFilter : 허가된 사이트나 클라이언트의 요청인지 검사하는 필터
 //12.CsrfFilter : CSRF Tocken을 사용하여 CSRF 공격을 막아주는 기능을 제공하는 필터
 
+@Slf4j
 @Controller
 public class HomeController {
+	
+	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home() {
+	public String home(Principal principal) {
+		log.warn("아이디 = "+principal.getName());
 		return "home";
 	}
 	
-	@RequestMapping(value = "/user/page", method = RequestMethod.GET)
+	@RequestMapping(value = "/guest/page", method = RequestMethod.GET)
 	public String guestPage() {
-		return "user_page";
+		return "guest_page";
 	}
 
 	@RequestMapping(value = "/user/page", method = RequestMethod.GET)

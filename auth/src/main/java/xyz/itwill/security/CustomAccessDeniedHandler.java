@@ -10,6 +10,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
 //접근제한에 대한 다양한 처리를 위해 AccessDeniedHandler 인터페이스를 구현하는 자식클래스 생성
+// => AccessDeniedHandler 인터페이스를 상속 받아 작성
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
 	@Override

@@ -13,7 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 //로그인 성공후에 실행될 기능을 제공하기위한 클래스 AuthenticationSuccessHandler인터페이스를 구현함
-// => AuthenicationSuccessHandler 인터페이스를 상속받아 작성
+// => AuthenicationSuccessHandler 인터페이스 or 해당 인터페이스를 상속받아 구현한 클래스를 상속받아 작성
 // => 사용자의 마지막 로그인날짜를 변경처리하는 시스템
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler
 {
