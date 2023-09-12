@@ -254,6 +254,21 @@
 			<artifactId>spring-security-taglibs</artifactId>
 			<version>${spring.security-version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.scribejava/scribejava-apis -->
+		<dependency>
+			<groupId>com.github.scribejava</groupId>
+			<artifactId>scribejava-apis</artifactId>
+			<version>3.3.0</version>
+			<!--<scope>runtime</scope> -->
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
+		<!-- => JSON 형식의 문자열을 Java 객체로 변환하기위한 기능을 제공하는 라이브러리 -->
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
 
 	</dependencies>
 
