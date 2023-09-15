@@ -3,6 +3,7 @@ package xyz.itwill.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import xyz.itwill.dto.SecurityReply;
@@ -17,10 +18,11 @@ public class SecurityReplyServiceImpl implements SecurityReplyService {
 	private final SecurityBoardRepository securityBoardRepository;
 	private final SecurityReplyRepository securityReplyRepository;
 
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void addSecurityReply(SecurityReply reply) {
 		if(securityUsersRepository.selectSecurityUsersByUserid(reply.getWriter()) == null) {
-			new IllegalArgumentException("ì‘ì„±ìë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+			new IllegalArgumentException("ÀÛ¼ºÀÚ¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
 		}
 		securityReplyRepository.insertSecurityReply(reply);
 	}
@@ -28,7 +30,7 @@ public class SecurityReplyServiceImpl implements SecurityReplyService {
 	@Override
 	public List<SecurityReply> getSecurityReplyList(int boardIdx) {
 		if(securityBoardRepository.selectSecurityBoardByIdx(boardIdx) == null) {
-			new IllegalArgumentException("ê²Œì‹œê¸€ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+			new IllegalArgumentException("°Ô½Ã±ÛÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
 		}
 		return securityReplyRepository.selectSecurityReplyList(boardIdx);
 	}

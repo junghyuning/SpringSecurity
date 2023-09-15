@@ -18,73 +18,76 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 @Component
 public class NaverLoginBean {
 	//로그인에 필요한 정보를 저장한 필드(상수) 선언
-	private static final String CLINT_ID="mHXwNpAULbrozZWrhDo2";
-	private static final String CLINT_SECRET="totvPNJ11j";
+	private static final String CLIENT_ID="xi6thXCdpMBmXIrqcirU";
+	private static final String CLIENT_SAECRET="HJJjPBiVan";
 	private static final String REDIRECT_URI="http://localhost:8000/auth/naver/callback";
-	private static final String SESSION_STATE="naver_state";
-	private static final String PROFILE_ID="https://openapi.naver.com/v1/nid/me";
-	private static final String PROFILE_API_URI = null;
+	private static final String SESSION_STATE="naverState";
+	//사용자 프로필을 조회하기 위한 API의 URL 주소 저장
+	private static final String PROFILE_API_URI="https://openapi.naver.com/v1/nid/me";
 	
-	//네이버 로그인 기능을 사용하여 토큰을 발급받기위한 메서드
+	//네이버 로그인 기능을 제공하는 API를 호출하여 결과(code와 state)를 반환하는 메소드 
 	public String getAuthorizationUrl(HttpSession session) {
-		//세션의 유효성 검증을 위한 난수값을 발생하여 저장
-		String state = UUID.randomUUID().toString();
+		//세션의 유효성 검증을 위한 난수값을 발생하여 저장 - 클라이언트가 동일한지를 검사하기 위한 값
+		String state=UUID.randomUUID().toString();
 		
-		//난수값을 세션 속성값으로 저장
+		//난수값을 세션 속성값으로 저장 - CSRF 토큰과 동일한 역활
 		session.setAttribute(SESSION_STATE, state);
 		
-		//Scribe 라이브러리의 클래스로 토큰을 발급받기위한 API의 URL 주소가 저장된 객체 생성
-		OAuth20Service oAuth20Service = new ServiceBuilder()
-				.apiKey(CLINT_ID)
-				.apiSecret(CLINT_SECRET)
+		//로그인 기능을 요청하기 위한 정보가 저장된 OAuth20Service 객체 생성
+		OAuth20Service oAuth20Service=new ServiceBuilder()
+				.apiKey(CLIENT_ID)
 				.callback(REDIRECT_URI)
 				.state(state)
 				.build(NaverLoginApi.instance());
 		
-		//네이버 로그인 기능을 요청하는 API 주소 반환
+		//네이버 로그인 기능을 요청하는 API를 요청하여 결과를 반환
+		// => Callback URL 주소에 질의문자열로 code와 state 이름으로 값이 저장된 URL 주소 반환 
 		return oAuth20Service.getAuthorizationUrl();
 	}
 	
-	//로그인 처리 후 콜백 기능을 이용하여 로그인 사용자의 접근 토큰을 발급받아 반환하기위한 메서드
-	public OAuth2AccessToken getAccessToken(HttpSession session, String code, String state) throws IOException{
+	//로그인 처리후 로그인 사용자의 접근 토큰을 발급받는 API를 호출하여 사용자 접근 토큰을 반환하기 위한 메소드
+	public OAuth2AccessToken getAccessToken(HttpSession session, String code, String state) throws IOException {
 		//세션의 유효성 검증을 위해 세션에 저장된 속성값(상태)를 반환받아 저장
-		String SessionState = (String)session.getAttribute(SESSION_STATE);
+		String sessionState=(String)session.getAttribute(SESSION_STATE);
 		
-		//매개변수로 전달받은 값과 세션에 저장된 값이 다른 경우 - 비정상적인 요청
-		if(StringUtils.pathEquals(SessionState, state)) {
+		//매개변수로 전달받은 값과 세션에 저장된 값이 다른 경우
+		// => 로그인 요청 클라이언트와 토큰 요청 클라이언트가 다른 경우 - 비정상적인 요청
+		if(!StringUtils.pathEquals(sessionState, state)) {
 			return null;
 		}
 		
-		OAuth20Service oAuth20Service = new ServiceBuilder()
-				.apiKey(CLINT_ID)
-				.apiSecret(CLINT_SECRET)
+		//사용자 접근 토큰을 발급 받기 위한 정보가 저장된 OAuth20Service 객체 생성
+		OAuth20Service oAuth20Service=new ServiceBuilder()
+				.apiKey(CLIENT_ID)
+				.apiSecret(CLIENT_SAECRET)
 				.callback(REDIRECT_URI)
 				.state(state)
 				.build(NaverLoginApi.instance());
 		
-		//사용자 접근 토큰을 발급하는 API를 요청하여 토큰을 발급받아 저장
-		OAuth2AccessToken accessToken = oAuth20Service.getAccessToken(code);
+		//사용자 접근 토큰을 발급하는 API를 요청하여 토큰을 발급받아 저장 
+		OAuth2AccessToken accessToken=oAuth20Service.getAccessToken(code);
 		
 		return accessToken;
 	}
 	
-	//사용자 접근 토큰을 사용하여 사용자의 프로필을 제공하는 API를 호출하는 메서드
+	//사용자 접근 토큰을 사용하여 사용자의 프로필을 제공하는 API를 호출하는 메소드
 	public String getUserProfile(OAuth2AccessToken accessToken) throws IOException {
-		OAuth20Service oAuth20Service = new ServiceBuilder()
-				.apiKey(CLINT_ID)
-				.apiSecret(CLINT_SECRET)
+		OAuth20Service oAuth20Service=new ServiceBuilder()
+				.apiKey(CLIENT_ID)
+				.apiSecret(CLIENT_SAECRET)
 				.callback(REDIRECT_URI)
 				.build(NaverLoginApi.instance());
 		
-		OAuthRequest request = new OAuthRequest(Verb.GET, PROFILE_API_URI, 	oAuth20Service);
+		//사용자의 프로필을 제공하는 API를 요청하기 위한 객체 생성
+		OAuthRequest request=new OAuthRequest(Verb.GET, PROFILE_API_URI, oAuth20Service);
 		
+		//사용자 접속 토큰과 API 요청 객체를 전달하여 로그인 사용의 프로필 요청
 		oAuth20Service.signRequest(accessToken, request);
 		
-		//요청에대한 결과(사용자 프로필)를 발급받아
-		Response response = request.send();
+		//요청에 대한 결과(사용자 프로필)를 응답받아 저장
+		Response response=request.send();
 		
-		//결과(JSON 형태) 반환
+		//결과(JSON) 반환
 		return response.getBody();
-		
 	}
 }
